@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2023. XiaoRGEEK.All Rights Reserved.
+  ~ Author：陈超锋
+  ~ Date：2023年2月28日
+  ~ Describe：
+  -->
+
+<resources>
+    <root-path
+        path="/storage/emulated/0/Download/"
+        name="List"/>
+</resources>

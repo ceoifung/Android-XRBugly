@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2023. XiaoRGEEK.All Rights Reserved.
+  ~ Author：陈超锋
+  ~ Date：2023年2月25日
+  ~ Describe：
+  -->
+
+<resources>
+    <color name="base_aa_transparent_black">#50000000</color>
+    <color name="md_white_1000">#FFFFFF</color>
+    <color name="tab_select_color">#501c2e46</color>
+    <color name="sa_accent_transparent">#e5b988</color>
+    <color name="ghost_white">#F8F8FF</color>
+    <color name="txt_y_color">#ffae00</color>
+    <color name="transparent">#00000000</color>
+</resources>
