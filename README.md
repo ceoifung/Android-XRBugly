@@ -2,6 +2,17 @@
 > 软件升级库
 
 ## 引用
+- 添加依赖
+```shell
+allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+	
+implementation 'com.github.ceoifung:xrbugly:1.0.0'
+```
 - AndroidManifest.xml中添加
 ```xml
 <application>
