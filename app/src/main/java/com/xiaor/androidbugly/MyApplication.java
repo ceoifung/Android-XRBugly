@@ -9,7 +9,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-//        XRBugly.init(getApplicationContext(), "uuid", true);
-//        XRBugly.autoUpgrade(getApplicationContext(), "升级地址");
+        XRBugly.init(getApplicationContext(), "appid", true);
+        XRBugly.autoUpgrade(getApplicationContext(), "更新地址");
     }
 }

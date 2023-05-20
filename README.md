@@ -11,7 +11,7 @@ allprojects {
 		}
 	}
 	
-implementation 'com.github.ceoifung:xrbugly:1.0.0'
+implementation 'com.github.ceoifung:xrbugly:1.0.1'
 ```
 - AndroidManifest.xml中添加
 ```xml
@@ -69,4 +69,6 @@ XRBugly.autoUpgrade(getApplicationContext(), "升级地址");
 // OnDataCallBackListener 请求的回调
 checkUpgrade(Context context, String upgradeUrl, OnDataCallBackListener<String> dataCallBackListener) 
 ```
-
+## 更新日志
+### 2023-5-20
+- 修复检测到按键按下，重复下载的bug

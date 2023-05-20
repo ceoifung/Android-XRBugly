@@ -63,7 +63,7 @@ public class XRBugly {
         XRBugly.upgradeDialogLayoutId = R.layout.item_layout_dialog;
         XRBugly.versionCode = getVersionCode(context);
         logPrint("init: " + context.getPackageName());
-        XRBugly.DOWNLOAD_DIR = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download/" +
+        XRBugly.DOWNLOAD_DIR = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download/XRBugly/" +
                 context.getPackageName() + File.separator;
         File dirFile = new File(DOWNLOAD_DIR);
         if (!dirFile.exists()) {
@@ -74,7 +74,7 @@ public class XRBugly {
         PRDownloader.initialize(context.getApplicationContext(), config);
     }
 
-    private static void logPrint(String data) {
+    public static void logPrint(String data) {
         if (XRBugly.debug) {
             Log.e(TAG, "logPrint: " + data);
         }

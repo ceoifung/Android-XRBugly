@@ -36,17 +36,34 @@ public class XRBetaActivity extends AppCompatActivity {
 
     private static final String TAG = "XRBetaActivity";
     private String appName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_xrbeta);
-        String[] permissions=new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
         ActivityCompat.requestPermissions(this, permissions, 1001);
         RequestData data = (RequestData) getIntent().getSerializableExtra("requestForm");
         if (data != null)
             showUpgradeDialog(this, data);
     }
-    int downloadId;
+
+    /**
+     * 判断文件是否存在
+     */
+    public void deleteApk(String strFile) {
+        try {
+            File f = new File(strFile);
+            if (f.exists()) {
+                f.delete();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    int downloadId = -1;
+
     private void showUpgradeDialog(Context context, RequestData reqData) {
         ((Activity) context).runOnUiThread(() -> {
             XRUpgradeDialog dialog = new XRUpgradeDialog(context)
@@ -75,69 +92,77 @@ public class XRBetaActivity extends AppCompatActivity {
                 public void onCommit(String data) {
                     if (context.getString(R.string.strUpgradeDialogUpgradeBtn).equals(data)) {
 //                        XRNotificationUtils.getInstance().createNotification(context);
-                        appName = reqData.getVersionName()+".apk";
-                        downloadId = PRDownloader.download(reqData.getFilePath(), XRBugly.DOWNLOAD_DIR, appName)
-                                .build()
-                                .setOnStartOrResumeListener(new OnStartOrResumeListener() {
-                                    @Override
-                                    public void onStartOrResume() {
+                        appName = reqData.getVersionName() + ".apk";
+//                        runOnUiThread(new Run);
+                        deleteApk(XRBugly.DOWNLOAD_DIR + appName);
+//                        如果已经下载过软件了，那么用户再次点击的情况下不在处理
+                        if (downloadId == -1) {
+                            dialog.setBtnUpgradeString(context.getString(R.string.strNotificationDownloading));
+                            downloadId = PRDownloader.download(reqData.getFilePath(), XRBugly.DOWNLOAD_DIR, appName)
+                                    .build()
+                                    .setOnStartOrResumeListener(new OnStartOrResumeListener() {
+                                        @Override
+                                        public void onStartOrResume() {
 
-                                    }
-                                })
-                                .setOnPauseListener(new OnPauseListener() {
-                                    @Override
-                                    public void onPause() {
+                                        }
+                                    })
+                                    .setOnPauseListener(new OnPauseListener() {
+                                        @Override
+                                        public void onPause() {
 
-                                    }
-                                })
-                                .setOnCancelListener(new OnCancelListener() {
-                                    @Override
-                                    public void onCancel() {
-
-                                    }
-                                })
-                                .setOnProgressListener(new OnProgressListener() {
-                                    @Override
-                                    public void onProgress(Progress progress) {
+                                        }
+                                    })
+                                    .setOnCancelListener(new OnCancelListener() {
+                                        @Override
+                                        public void onCancel() {
+                                            downloadId = -1;
+                                        }
+                                    })
+                                    .setOnProgressListener(new OnProgressListener() {
+                                        @Override
+                                        public void onProgress(Progress progress) {
 //                                        Log.e(TAG, "onProgress: 下载进度==" + progress.currentBytes);
-                                        double percent = (progress.currentBytes * 1.0) / progress.totalBytes * 100;
+                                            double percent = (progress.currentBytes * 1.0) / progress.totalBytes * 100;
 //                                        XRNotificationUtils.getInstance().updateProgress("downloading", (int) Math.round(percent));
-                                        dialog.setBtnUpgradeString(Math.round(percent) + "%");
-                                    }
-                                })
-                                .start(new OnDownloadListener() {
-                                    @Override
-                                    public void onDownloadComplete() {
+                                            dialog.setBtnUpgradeString(Math.round(percent) + "%");
+                                        }
+                                    })
+                                    .start(new OnDownloadListener() {
+                                        @Override
+                                        public void onDownloadComplete() {
 //                                        Log.e(TAG, "onDownloadComplete: 下载完成");
 //                                    dialog.close();
-                                        XRNotificationUtils.getInstance().updateProgress(context.getString(R.string.strNotificationClickToInstall), 100);
-                                        dialog.setBtnUpgradeString(context.getString(R.string.strNotificationClickToInstall));
+//                                            XRNotificationUtils.getInstance().updateProgress(context.getString(R.string.strNotificationClickToInstall), 100);
+                                            dialog.setBtnUpgradeString(context.getString(R.string.strNotificationClickToInstall));
+                                            downloadId = -1;
+                                        }
 
-                                    }
-
-                                    @Override
-                                    public void onError(Error error) {
-                                        Log.e(TAG, "onError: 下载错误" + error.getServerErrorMessage());
-                                        Toast.makeText(context, "下载错误", Toast.LENGTH_SHORT).show();
-                                        dialog.setBtnUpgradeString(context.getString(R.string.strNotificationClickToRetry));
+                                        @Override
+                                        public void onError(Error error) {
+                                            XRBugly.logPrint("onError: 下载错误" + error.getServerErrorMessage());
+                                            Toast.makeText(context, "下载错误", Toast.LENGTH_SHORT).show();
+                                            dialog.setBtnUpgradeString(context.getString(R.string.strNotificationClickToRetry));
+                                            downloadId = -1;
 //                                        dialog.close();
-                                    }
-                                });
+                                        }
+                                    });
+                        }else{
+                            XRBugly.logPrint("onCommit: 任务已存在" );
+                        }
+
                     } else if (context.getString(R.string.strNotificationClickToInstall).equals(data)) {
                         installApk(context);
                         dialog.dismiss();
 //                        finish();
-                    }else if (context.getString(R.string.strNotificationClickToRetry).equals(data)) {
+                    } else if (context.getString(R.string.strNotificationClickToRetry).equals(data)) {
 //                        Log.e(TAG, "onCommit: " + downloadId);
 //                        PRDownloader.resume(downloadId);
                         dialog.setBtnUpgradeString(context.getString(R.string.strUpgradeDialogUpgradeBtn));
-                    }
-                    else if ("close".equals(data)){
+                    } else if ("close".equals(data)) {
                         XRBugly.hasNewVersion = false;
                         finish();
-                    }
-                    else {
-                        Log.e(TAG, "onCommit: 正在更新中，无效点击");
+                    } else {
+                        XRBugly.logPrint("onCommit: 正在更新中，无效点击");
                     }
 
 
@@ -184,13 +209,13 @@ public class XRBetaActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.e(TAG, "onStart: XRBetaActivity" );
+        Log.e(TAG, "onStart: XRBetaActivity");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.e(TAG, "onStop: XRBetaActivity Destory" );
+        Log.e(TAG, "onStop: XRBetaActivity Destory");
 //        RequestData data = (RequestData) getIntent().getSerializableExtra("requestForm");
 //        if (data != null)
 //            showUpgradeDialog(this, data);
@@ -199,14 +224,14 @@ public class XRBetaActivity extends AppCompatActivity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if (hasFocus){
-            Log.e(TAG, "onWindowFocusChanged: focuse change" );
+        if (hasFocus) {
+            Log.e(TAG, "onWindowFocusChanged: focuse change");
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.e(TAG, "onDestroy: XRBetaActivity Destory" );
+        Log.e(TAG, "onDestroy: XRBetaActivity Destory");
     }
 }
