@@ -1,4 +1,4 @@
-# XRBugly
+# XRBugly[![](https://jitpack.io/v/ceoifung/xrbugly.svg)](https://jitpack.io/#ceoifung/xrbugly)
 > 软件升级库
 
 ## 引用
