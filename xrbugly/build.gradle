@@ -60,7 +60,7 @@ afterEvaluate {
                 // You can then customize attributes of the publication as shown below.
                 groupId = "com.xiaor.xrbugly"
                 artifactId = 'xrbugly'
-                version = '1.0.0'
+                version = '1.0.1'
             }
             // Creates a Maven publication called “debug”.
             debug(MavenPublication) {
@@ -69,7 +69,7 @@ afterEvaluate {
 
                 groupId = "com.xiaor.xrbugly"
                 artifactId = 'xrbugly'
-                version = '1.0.0-SNAPSHOT'
+                version = '1.0.1-SNAPSHOT'
             }
         }
         repositories {
